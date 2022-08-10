@@ -15,60 +15,65 @@ const resolvers = {
     },
 
     Mutation: {
-        addUser: async(parent, { username, email, password }) => {
-            const user = await User.create({ username, email, password });
-            const token = signToken(user);
+            addUser: async(parent, { username, email, password }) => {
+                const user = await User.create({ username, email, password });
+                const token = signToken(user);
 
-            return {token, user};
+                return {token, user};
+            },
+
+            login: async (parent, {email, password}) => {
+                const user = await User.findOne({email});
+
+                if(!user){
+                    throw new AuthenticationError('No user found with this email address');
+                }
+
+                const correctPw = await user.isCorrectPassword(password);
+
+                if(!correctPw){
+                    throw new AuthenticationError('Invalid Password');
+                }
+
+                const token = signToken(user);
+
+                return {token, user};
+            },
+        
+
+        saveBook: async (parent, args, context) => {
+
+            const {bookSaved} = args;
+            
+            if (context.user) {
+
+                const updateUser = await User.findOneAndUpdate(
+                    { _id: context.user._id },
+                    { $addToSet: { savedBooks: bookSaved } },
+                    { new: true, runValidators: true }
+                );
+
+                return updateUser;
+            }
+
+            throw new AuthenticationError('You need to be logged in!');
+
         },
 
-        login: async (parent, {email, password}) => {
-            const user = await User.findOne({email});
+        removeBook: async ( parent, {bookId}, context) => {
+            if (context.user) {
 
-            if(!user){
-                throw new AuthenticationError('No user found with this email address');
-            }
-
-            const correctPw = await user.isCorrectPassword(password);
-
-            if(!correctPw){
-                throw new AuthenticationError('Invalid Password');
-            }
-
-            const token = signToken(user);
-
-            return {token, user};
-        }
-    },
-
-    saveBook: async(parent, {bookSaved}, context) => {
-        if (context.user) {
-            const updateUser = await User.findOneAndUpdate(
+            const bookRemoved = await User.findOneAndUpdate(
                 { _id: context.user._id },
-                { $addToSet: { savedBooks: bookSaved } },
+                { $pull: { savedBooks: {bookId} } },
                 { new: true }
-            );
+                );
+        
+                return bookRemoved;
+            }
 
-            return updateUser;
+            throw new AuthenticationError('You need to be logged in!');
         }
-
-        throw new AuthenticationError('You need to be logged in!');
-
-    },
-
-    removeBook: async ( parent, {bookId}, context) => {
-        if (context.user) {
-
-           const bookRemoved = await User.findOneAndUpdate(
-              { _id: context.user._id },
-              { $pull: { savedBooks: {bookId} } },
-              { new: true }
-            );
-    
-            return bookRemoved;
-          }
-
-          throw new AuthenticationError('You need to be logged in!');
     }
 };
 
