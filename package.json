@@ -4,7 +4,13 @@
   "description": "",
   "main": "server/server.js",
   "scripts": {
-    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client"
+    "start:dev": "concurrently \"cd client && npm run build\" \"cd server && npm run server\" ",
+    "start": "npm run build && cd server && node server.js",
+    "server": "cd server server.js --ignore client",
+    "build": "cd client && npm run build",
+    "install": "cd client && npm install",
+    "postinstall": "(cd client && npm install && npm install --dev); (cd server && npm install)",
+    "client": "cd client && npm start"
   },
   "keywords": [],
   "author": "",
