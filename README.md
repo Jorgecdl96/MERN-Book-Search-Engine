@@ -31,7 +31,7 @@ The Package json is already added in this project, so you should only have to in
 
 ## Usage
 
-To run the application in your local host, you should type in your terminal the following  `npm run start` and then going to your browser at `http://localhost:3001/`. You will be able to see the app running in the browser.
+To run the application in your local host, you should type in your terminal the following commands `npm run build` and then `npm run develop` to finally see the app running in the browser at `http://localhost:3000/`. 
 
 ## Mock-Up
 
