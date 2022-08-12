@@ -5,7 +5,10 @@
 
 ## Description
 
+Book search engine helps users to search for their favorite books and save them in just one click.
+
 This app is fully functioning with Google Books API search engine built with GraphQL API and Apollo Server.
+
 
 This app has been built with the follwoing technologies:
 
